@@ -7,7 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fatigue Monitor — Smart Micro-Rest System",
+  title: "Micro_Rest_Recommendation_System",
   description: "Wearable-based personalized fatigue monitoring and micro-rest recommendation for office workers",
 };
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
-          Research Prototype · Smart Wearable Fatigue Monitoring System
+          Research Prototype · Micro_Rest_Recommendation_System
         </footer>
       </body>
     </html>

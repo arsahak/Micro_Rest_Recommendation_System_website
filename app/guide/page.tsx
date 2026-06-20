@@ -61,7 +61,7 @@ export default function GuidePage() {
         <span className="inline-block bg-sky-50 text-sky-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
           User Guide
         </span>
-        <h1 className="text-2xl font-bold text-slate-900">How to Use FatigueMonitor</h1>
+        <h1 className="text-2xl font-bold text-slate-900">How to Use Micro_Rest_Recommendation_System</h1>
         <p className="text-sm text-slate-500 max-w-xl mx-auto">
           A quick walkthrough of the full workflow — from baseline setup to getting a micro-rest prompt and giving feedback.
         </p>

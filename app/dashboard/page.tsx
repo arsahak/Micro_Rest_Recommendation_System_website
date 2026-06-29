@@ -45,13 +45,11 @@ export default async function DashboardPage() {
   }
 
   const stats = [
-    { label: "Total Check-ins", value: String(summary.overview.total_checkins), sub: `across ${summary.overview.participant_count} participants` },
-    { label: "High Risk Events", value: String(summary.overview.risk_distribution.High), sub: `${summary.overview.high_risk_pct}% of check-ins` },
-    { label: "Prompts Completed", value: String(summary.feedback.completion_count), sub: `${summary.feedback.completion_rate}% completion rate` },
-    { label: "Avg Usefulness", value: summary.feedback.avg_usefulness ? `${summary.feedback.avg_usefulness} / 5` : "—", sub: `from ${summary.feedback.total_feedback} feedback entries` },
+    { icon: "📋", label: "Total Check-ins", value: String(summary.overview.total_checkins), sub: `across ${summary.overview.participant_count} participants` },
+    { icon: "🔥", label: "High Risk Events", value: String(summary.overview.risk_distribution.High), sub: `${summary.overview.high_risk_pct}% of check-ins` },
+    { icon: "✅", label: "Prompts Completed", value: String(summary.feedback.completion_count), sub: `${summary.feedback.completion_rate}% completion rate` },
+    { icon: "⭐", label: "Avg Usefulness", value: summary.feedback.avg_usefulness ? `${summary.feedback.avg_usefulness} / 5` : "—", sub: `from ${summary.feedback.total_feedback} feedback entries` },
   ];
-
-  const maxTrendTotal = Math.max(1, ...trend.map((t) => t.total));
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
@@ -61,14 +59,15 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-slate-900">Researcher Dashboard</h1>
           <p className="text-sm text-slate-500 mt-1">Live Phase 2 data from the fatigue monitor API</p>
         </div>
-        <Link href="/checkin" className="inline-block text-center bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shrink-0">
+        <Link href="/checkin" className="btn-primary shrink-0">
           + New Check-in
         </Link>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(({ label, value, sub }) => (
-          <div key={label} className="card p-4 space-y-1">
+        {stats.map(({ icon, label, value, sub }) => (
+          <div key={label} className="card p-4 space-y-2">
+            <span className="icon-badge-sm">{icon}</span>
             <p className="text-xs text-slate-500">{label}</p>
             <p className="text-2xl font-bold text-slate-900">{value}</p>
             <p className="text-xs text-slate-400">{sub}</p>
@@ -119,21 +118,23 @@ export default async function DashboardPage() {
             <p className="text-xs text-slate-400">No prompts issued yet.</p>
           ) : (
             <div className="space-y-3">
-              {prompts.map(({ prompt, usage_count, completions, total_feedback }) => {
+              {(() => {
                 const maxUsage = Math.max(1, ...prompts.map((p) => p.usage_count));
-                const pct = (usage_count / maxUsage) * 100;
-                return (
-                  <div key={prompt} className="space-y-1">
-                    <div className="flex justify-between text-xs text-slate-600">
-                      <span className="font-medium">{prompt}</span>
-                      <span className="text-slate-400">{completions}/{total_feedback || usage_count} completed</span>
+                return prompts.map(({ prompt, usage_count, completions, total_feedback }) => {
+                  const pct = (usage_count / maxUsage) * 100;
+                  return (
+                    <div key={prompt} className="space-y-1">
+                      <div className="flex justify-between text-xs text-slate-600">
+                        <span className="font-medium">{prompt}</span>
+                        <span className="text-slate-400">{completions}/{total_feedback || usage_count} completed</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2">
+                        <div className="bg-teal-400 rounded-full h-2 transition-all" style={{ width: `${pct}%` }} />
+                      </div>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2">
-                      <div className="bg-sky-400 rounded-full h-2 transition-all" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           )}
         </div>
@@ -169,7 +170,7 @@ export default async function DashboardPage() {
       <div className="card p-5 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-slate-700">Recent Check-ins</h2>
-          <Link href="/history" className="text-xs text-sky-600 hover:text-sky-800 font-medium">View all →</Link>
+          <Link href="/history" className="text-xs text-teal-600 hover:text-teal-800 font-medium">View all →</Link>
         </div>
         {summary.recent_checkins.length === 0 ? (
           <p className="text-xs text-slate-400">No check-ins yet.</p>

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { createCheckinAction } from "./actions";
+import SessionPanel from "@/component/session/SessionPanel";
+import type { Session } from "@/lib/api";
 
 const TIME_POINTS = [
   "Before Work",
@@ -40,8 +42,8 @@ function ScaleInput({
             onClick={() => onChange(n)}
             className={`flex-1 h-8 sm:h-9 rounded-md text-xs sm:text-sm font-semibold border transition-colors ${
               value === n
-                ? "bg-sky-600 border-sky-600 text-white"
-                : "bg-white border-slate-200 text-slate-600 hover:border-sky-300 hover:text-sky-700"
+                ? "bg-teal-600 border-teal-600 text-white"
+                : "bg-white border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
             }`}
           >
             {n}
@@ -72,6 +74,16 @@ export default function CheckinForm({
   });
   const set = (k: string, v: string | number) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  // Auto-fill from the active session once per participant switch (Section 7 input design);
+  // the user can still edit the fields afterward without them being overwritten on every heartbeat.
+  const handleSessionLoaded = (session: Session) => {
+    setForm((f) => ({
+      ...f,
+      sitting_duration_min: String(session.sitting_duration_min),
+      screen_exposure_min: String(session.screen_exposure_min),
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,37 +121,39 @@ export default function CheckinForm({
         <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
           Session Context
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">
-              Participant ID
-            </label>
-            <select
-              value={form.participant_id}
-              onChange={(e) => set("participant_id", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-            >
-              {participants.length === 0 ? (
-                <option>P01</option>
-              ) : (
-                participants.map((p) => <option key={p}>{p}</option>)
-              )}
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">
-              Time Point
-            </label>
-            <select
-              value={form.time_point}
-              onChange={(e) => set("time_point", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-            >
-              {TIME_POINTS.map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-slate-700">
+            Participant ID
+          </label>
+          <select
+            value={form.participant_id}
+            onChange={(e) => set("participant_id", e.target.value)}
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            {participants.length === 0 ? (
+              <option>P01</option>
+            ) : (
+              participants.map((p) => <option key={p}>{p}</option>)
+            )}
+          </select>
+        </div>
+
+        <SessionPanel key={form.participant_id} participantId={form.participant_id} onSessionLoaded={handleSessionLoaded} />
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-slate-700">
+            Time Point
+          </label>
+          <select
+            value={form.time_point}
+            onChange={(e) => set("time_point", e.target.value)}
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            {TIME_POINTS.map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -162,7 +176,7 @@ export default function CheckinForm({
             placeholder="e.g. 78"
             value={form.current_hr}
             onChange={(e) => set("current_hr", e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
           <p className="text-xs text-slate-400">
             Check your Fitbit Charge 6 wrist display or the Fitbit app.
@@ -224,7 +238,7 @@ export default function CheckinForm({
               placeholder="e.g. 90"
               value={form.sitting_duration_min}
               onChange={(e) => set("sitting_duration_min", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
             <p className="text-xs text-slate-400">Minutes since last break</p>
           </div>
@@ -239,7 +253,7 @@ export default function CheckinForm({
               placeholder="e.g. 85"
               value={form.screen_exposure_min}
               onChange={(e) => set("screen_exposure_min", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
         </div>
@@ -248,7 +262,7 @@ export default function CheckinForm({
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors text-sm"
+        className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors text-sm"
       >
         {submitting ? "Calculating..." : "Calculate Fatigue Risk →"}
       </button>

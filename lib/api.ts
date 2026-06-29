@@ -82,6 +82,8 @@ export interface Checkin {
   _id: string;
   checkin_id: string;
   participant_id: string;
+  session_id?: string;
+  session_mode: "Baseline" | "Intervention";
   date: string;
   time_point: string;
   current_hr: number;
@@ -189,5 +191,44 @@ export const getDashboardSummary = () => get<{ success: boolean; data: Dashboard
 export const getParticipantSummary = () => get<{ success: boolean; data: ParticipantSummaryRow[] }>("/api/research-dashboard/participants");
 export const getPromptUsageSummary = () => get<{ success: boolean; data: PromptUsageRow[] }>("/api/research-dashboard/prompts");
 export const getRiskTrend = () => get<{ success: boolean; data: RiskTrendRow[] }>("/api/research-dashboard/risk-trend");
+
+// ---------- Sessions ----------
+export interface Session {
+  _id: string;
+  session_id: string;
+  participant_id: string;
+  session_date: string;
+  session_mode: "Baseline" | "Intervention";
+  status: "active" | "ended";
+  start_time: string;
+  end_time?: string;
+  sitting_duration_min: number;
+  screen_exposure_min: number;
+  last_checkin_time?: string;
+  last_rest_time?: string;
+  previous_risk_level?: "Low" | "Medium" | "High";
+  previous_dominant_issue?: string;
+  previous_rest_status?: "completed" | "completed_worse" | "skipped" | "snoozed";
+  checkin_snooze_count: number;
+  consecutive_high_risk_count: number;
+  total_checkins: number;
+  total_rest_actions: number;
+}
+
+export interface CheckinStatus {
+  due: boolean;
+  trigger_reason: string[];
+  suggested_interval_minutes: number;
+  escalate: boolean;
+}
+
+export const startSession = (participant_id: string) => post<{ success: boolean; data: Session }>("/api/sessions", { participant_id });
+export const getActiveSession = (participant_id: string) => get<{ success: boolean; data: Session }>(`/api/sessions/active/${participant_id}`);
+export const sendHeartbeat = (session_id: string, active_minutes: number) =>
+  put<{ success: boolean; data: Session }>(`/api/sessions/${session_id}/heartbeat`, { active_minutes });
+export const recordRest = (session_id: string) => put<{ success: boolean; data: Session }>(`/api/sessions/${session_id}/rest`, {});
+export const endSession = (session_id: string) => put<{ success: boolean; data: Session }>(`/api/sessions/${session_id}/end`, {});
+export const getCheckinStatus = (session_id: string) => get<{ success: boolean; data: CheckinStatus }>(`/api/sessions/${session_id}/checkin-status`);
+export const snoozeCheckin = (session_id: string) => put<{ success: boolean; data: { notification: unknown; session: Session } }>(`/api/sessions/${session_id}/snooze`, {});
 
 export { put, del };

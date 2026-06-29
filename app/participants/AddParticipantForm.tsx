@@ -13,22 +13,22 @@ export default function AddParticipantForm() {
       <div className="space-y-1 w-full sm:w-28">
         <label className="text-xs font-medium text-slate-600">Participant ID</label>
         <input name="participant_id" required placeholder="P06"
-          className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
       </div>
       <div className="space-y-1 w-full sm:w-40">
         <label className="text-xs font-medium text-slate-600">Label</label>
         <input name="participant_label" placeholder="Participant 6"
-          className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
       </div>
       <div className="space-y-1 w-full sm:w-auto">
         <label className="text-xs font-medium text-slate-600">Study Phase</label>
         <select name="study_phase" defaultValue="Baseline"
-          className="w-full sm:w-auto border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+          className="w-full sm:w-auto border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
           {["Baseline", "Prototype-use", "Completed"].map((p) => <option key={p}>{p}</option>)}
         </select>
       </div>
       <button type="submit" disabled={pending}
-        className="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors">
+        className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors">
         {pending ? "Adding..." : "+ Add Participant"}
       </button>
       {state.message && (

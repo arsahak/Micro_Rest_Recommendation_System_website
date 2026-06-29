@@ -24,18 +24,27 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const alertsRef = useRef<Checkin[]>([]);
 
   const fetchAlerts = async () => {
     try {
       const res = await fetch("/api/alerts", { cache: "no-store" });
       const body = await res.json();
       const data: Checkin[] = body.data ?? [];
-      setAlerts(data);
 
-      const lastSeenAt = localStorage.getItem(LAST_SEEN_KEY);
-      const lastSeenTime = lastSeenAt ? new Date(lastSeenAt).getTime() : 0;
-      const unreadCount = data.filter((a) => new Date(a.createdAt).getTime() > lastSeenTime).length;
-      setUnread(unreadCount);
+      const prev = alertsRef.current;
+      const changed =
+        prev.length !== data.length || data.some((a, i) => a.checkin_id !== prev[i]?.checkin_id);
+
+      if (changed) {
+        alertsRef.current = data;
+        setAlerts(data);
+
+        const lastSeenAt = localStorage.getItem(LAST_SEEN_KEY);
+        const lastSeenTime = lastSeenAt ? new Date(lastSeenAt).getTime() : 0;
+        const unreadCount = data.filter((a) => new Date(a.createdAt).getTime() > lastSeenTime).length;
+        setUnread(unreadCount);
+      }
     } catch {
       // backend unreachable — leave existing state as-is
     }

@@ -39,9 +39,9 @@ const researcherSteps = [
 ];
 
 const riskLevels = [
-  { level: "Low", badge: "badge-low", score: "Total score 0–2", desc: "No micro-rest needed — keep working." },
-  { level: "Medium", badge: "badge-medium", score: "Total score 3–5", desc: "One targeted micro-rest is recommended." },
-  { level: "High", badge: "badge-high", score: "Total score 6–12", desc: "Take the micro-rest now — risk is elevated." },
+  { level: "Low", badge: "badge-low", score: "Total score 0–34", desc: "No micro-rest needed — keep working.", border: "border-l-green-400" },
+  { level: "Medium", badge: "badge-medium", score: "Total score 35–64", desc: "One targeted micro-rest is recommended.", border: "border-l-amber-400" },
+  { level: "High", badge: "badge-high", score: "Total score 65–100", desc: "Take the micro-rest now — risk is elevated.", border: "border-l-red-400" },
 ];
 
 const scoreInputs = [
@@ -57,10 +57,8 @@ export default function GuidePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-10">
 
-      <div className="text-center space-y-2">
-        <span className="inline-block bg-sky-50 text-sky-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
-          User Guide
-        </span>
+      <div className="hero-surface text-center space-y-2 px-6 py-10">
+        <span className="eyebrow">User Guide</span>
         <h1 className="text-2xl font-bold text-slate-900">How to Use Micro_Rest_Recommendation_System</h1>
         <p className="text-sm text-slate-500 max-w-xl mx-auto">
           A quick walkthrough of the full workflow — from baseline setup to getting a micro-rest prompt and giving feedback.
@@ -69,18 +67,21 @@ export default function GuidePage() {
 
       {/* Participant workflow */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">For Participants</h2>
+        <div className="flex items-center gap-2">
+          <span className="h-5 w-1 rounded-full bg-teal-500" />
+          <h2 className="text-lg font-semibold text-slate-800">For Participants</h2>
+        </div>
         <div className="space-y-3">
           {participantSteps.map(({ step, title, desc, link }) => (
             <div key={step} className="card p-4 flex gap-4">
-              <span className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-sky-600 text-white text-xs font-bold mt-0.5">
+              <span className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-teal-600 text-white text-xs font-bold mt-0.5">
                 {step}
               </span>
               <div className="space-y-1.5">
                 <h3 className="font-semibold text-slate-800 text-sm">{title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
                 {link && (
-                  <Link href={link.href} className="inline-block text-xs text-sky-600 hover:text-sky-800 font-medium">
+                  <Link href={link.href} className="inline-block text-xs text-teal-600 hover:text-teal-800 font-medium">
                     {link.label} →
                   </Link>
                 )}
@@ -92,7 +93,10 @@ export default function GuidePage() {
 
       {/* What each score input means */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">What Each Reading Means</h2>
+        <div className="flex items-center gap-2">
+          <span className="h-5 w-1 rounded-full bg-teal-500" />
+          <h2 className="text-lg font-semibold text-slate-800">What Each Reading Means</h2>
+        </div>
         <div className="card overflow-hidden">
           <div className="divide-y divide-slate-100">
             {scoreInputs.map(({ name, range }) => (
@@ -107,14 +111,18 @@ export default function GuidePage() {
 
       {/* Risk levels */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">Understanding Your Risk Level</h2>
+        <div className="flex items-center gap-2">
+          <span className="h-5 w-1 rounded-full bg-teal-500" />
+          <h2 className="text-lg font-semibold text-slate-800">Understanding Your Risk Level</h2>
+        </div>
         <p className="text-sm text-slate-500">
-          Every check-in is scored 0, 1, or 2 on six factors (eye strain, body discomfort, sitting duration, fatigue,
-          sleepiness, and heart-rate deviation from your baseline). The six scores are added into a total risk score.
+          Each check-in normalizes six factors (fatigue, sleepiness, eye strain, body discomfort, sitting/screen
+          exposure, and heart-rate deviation from your baseline) to a 0–100 scale, then combines them into a single
+          weighted total risk score.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          {riskLevels.map(({ level, badge, score, desc }) => (
-            <div key={level} className="card flex-1 p-4 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {riskLevels.map(({ level, badge, score, desc, border }) => (
+            <div key={level} className={`card border-l-4 ${border} p-4 space-y-2`}>
               <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge}`}>{level}</span>
               <p className="text-xs font-medium text-slate-600">{score}</p>
               <p className="text-xs text-slate-400 leading-relaxed">{desc}</p>
@@ -130,10 +138,13 @@ export default function GuidePage() {
 
       {/* Researcher workflow */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">For Researchers</h2>
+        <div className="flex items-center gap-2">
+          <span className="h-5 w-1 rounded-full bg-teal-500" />
+          <h2 className="text-lg font-semibold text-slate-800">For Researchers</h2>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {researcherSteps.map(({ title, desc, href }) => (
-            <Link key={href} href={href} className="card p-4 space-y-1.5 hover:border-sky-200 hover:bg-sky-50 transition-colors">
+            <Link key={href} href={href} className="card card-link p-4 space-y-1.5">
               <h3 className="font-semibold text-slate-800 text-sm">{title}</h3>
               <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
             </Link>
@@ -151,7 +162,7 @@ export default function GuidePage() {
       </section>
 
       <div className="text-center pt-2">
-        <Link href="/checkin" className="inline-block bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <Link href="/checkin" className="btn-primary">
           Start Your First Check-in →
         </Link>
       </div>

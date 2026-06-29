@@ -14,7 +14,7 @@ function RatingRow({ label, value, onChange, lowLabel, highLabel }: {
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} type="button" onClick={() => onChange(n)}
             className={`flex-1 h-8 sm:h-9 rounded-md text-xs sm:text-sm font-semibold border transition-colors ${
-              value === n ? "bg-sky-600 border-sky-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-sky-300 hover:text-sky-700"
+              value === n ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
             }`}>
             {n}
           </button>
@@ -91,11 +91,11 @@ export default function FeedbackForm({ checkinId }: { checkinId: string }) {
         <label className="text-sm font-medium text-slate-700">Additional Comments <span className="text-slate-400 font-normal">(optional)</span></label>
         <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)}
           placeholder="Any notes on the prompt, timing, or your experience..."
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none" />
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none" />
       </div>
 
       <button type="submit" disabled={completed === null || submitting}
-        className="w-full bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors text-sm">
+        className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors text-sm">
         {submitting ? "Submitting..." : "Submit Feedback"}
       </button>
 

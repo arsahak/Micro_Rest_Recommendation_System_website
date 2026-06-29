@@ -32,7 +32,7 @@ export default async function HistoryPage({
           <h1 className="text-2xl font-bold text-slate-900">Check-in History</h1>
           <p className="text-sm text-slate-500 mt-1">All check-in records with calculated risk and prompt output.</p>
         </div>
-        <Link href="/checkin" className="inline-block text-center bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shrink-0">
+        <Link href="/checkin" className="inline-block text-center bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shrink-0">
           + New Check-in
         </Link>
       </div>
@@ -45,19 +45,19 @@ export default async function HistoryPage({
 
       <div className="card p-3 flex gap-3 flex-wrap items-center">
         <span className="text-xs font-medium text-slate-500">Filter:</span>
-        <Link href="/history" className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${!pid ? "bg-sky-600 border-sky-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-sky-300"}`}>
+        <Link href="/history" className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${!pid ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-teal-300"}`}>
           All
         </Link>
         {participants.map((p) => (
           <Link key={p} href={`/history?pid=${p}${risk_level ? `&risk_level=${risk_level}` : ""}`}
-            className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${pid === p ? "bg-sky-600 border-sky-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-sky-300"}`}>
+            className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${pid === p ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-teal-300"}`}>
             {p}
           </Link>
         ))}
         <div className="ml-auto flex gap-2">
           {["High", "Medium", "Low"].map((lvl) => (
             <Link key={lvl} href={`/history?${pid ? `pid=${pid}&` : ""}risk_level=${lvl}`}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${risk_level === lvl ? "bg-sky-600 border-sky-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-sky-300"}`}>
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${risk_level === lvl ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-teal-300"}`}>
               {lvl}
             </Link>
           ))}
@@ -83,8 +83,8 @@ export default async function HistoryPage({
             </div>
             <p className="text-xs text-slate-600"><strong>{row.dominant_issue}</strong> · {row.selected_prompt}</p>
             <div className="flex gap-4 pt-1">
-              <Link href={`/prompt/${row.checkin_id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">View →</Link>
-              <Link href={`/feedback?checkin_id=${row.checkin_id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Feedback →</Link>
+              <Link href={`/prompt/${row.checkin_id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">View →</Link>
+              <Link href={`/feedback?checkin_id=${row.checkin_id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">Feedback →</Link>
             </div>
           </div>
         ))}
@@ -121,8 +121,8 @@ export default async function HistoryPage({
                   <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{row.selected_prompt}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <Link href={`/prompt/${row.checkin_id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">View →</Link>
-                      <Link href={`/feedback?checkin_id=${row.checkin_id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Feedback →</Link>
+                      <Link href={`/prompt/${row.checkin_id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">View →</Link>
+                      <Link href={`/feedback?checkin_id=${row.checkin_id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">Feedback →</Link>
                     </div>
                   </td>
                 </tr>

@@ -26,7 +26,7 @@ export default async function PromptOutputPage({ params }: { params: Promise<{ i
       <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-3">
         <h2 className="text-xl font-bold text-slate-900">Could Not Load Result</h2>
         <p className="text-sm text-slate-500">{error instanceof ApiError ? error.message : "Backend unreachable."}</p>
-        <Link href="/checkin" className="text-sm text-sky-600 hover:text-sky-800 font-medium">← Back to Check-in</Link>
+        <Link href="/checkin" className="text-sm text-teal-600 hover:text-teal-800 font-medium">← Back to Check-in</Link>
       </div>
     );
   }
@@ -51,52 +51,65 @@ export default async function PromptOutputPage({ params }: { params: Promise<{ i
           <h1 className="text-2xl font-bold text-slate-900">Fatigue Risk Result</h1>
           <p className="text-sm text-slate-500 mt-0.5">{checkin.participant_id} · {checkin.time_point}</p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-sm font-bold ${riskColor[checkin.risk_level]}`}>
-          {checkin.risk_level} Risk
-        </span>
-      </div>
-
-      <div className={`card p-6 space-y-4 border-l-4 ${
-        checkin.risk_level === "High" ? "border-l-red-500" : checkin.risk_level === "Medium" ? "border-l-amber-500" : "border-l-green-500"
-      }`}>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">{icon}</span>
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">{checkin.dominant_issue}</p>
-            <h2 className="text-lg font-bold text-slate-900">{checkin.selected_prompt}</h2>
-          </div>
-        </div>
-        <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 rounded-lg p-3">{checkin.instruction}</p>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-500">Duration: <strong className="text-slate-700">{checkin.duration}</strong></span>
-          <span className="text-xs text-slate-500">Total Risk Score: <strong className="text-slate-700">{checkin.total_risk_score} / 12</strong></span>
-        </div>
-        {checkin.risk_level !== "Low" && (
-          <Link href={feedbackHref}
-            className="block w-full text-center bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 rounded-lg transition-colors text-sm mt-2">
-            Start Micro-Rest →
-          </Link>
+        {checkin.session_mode !== "Baseline" && (
+          <span className={`px-3 py-1 rounded-full text-sm font-bold ${riskColor[checkin.risk_level]}`}>
+            {checkin.risk_level} Risk
+          </span>
         )}
       </div>
 
-      <div className="card p-5 space-y-3">
-        <h3 className="text-sm font-semibold text-slate-700">Risk Score Breakdown</h3>
-        <div className="space-y-2">
-          {scoreRows.map(({ label, raw, risk: r }) => (
-            <div key={label} className="flex items-center gap-3">
-              <span className="text-xs text-slate-500 w-44 shrink-0">{label}</span>
-              <div className="flex gap-1">
-                {[0, 1, 2].map((dot) => (
-                  <span key={dot} className={`w-3 h-3 rounded-full ${dot < r ? (r === 2 ? "bg-red-500" : "bg-amber-400") : "bg-slate-100"}`} />
-                ))}
-              </div>
-              <span className={`text-xs font-semibold ml-1 ${r === 2 ? "text-red-600" : r === 1 ? "text-amber-600" : "text-slate-400"}`}>
-                {r === 2 ? "High" : r === 1 ? "Medium" : "Low"} ({raw})
-              </span>
-            </div>
-          ))}
+      {checkin.session_mode === "Baseline" ? (
+        <div className="card p-6 space-y-2 border-l-4 border-l-slate-300">
+          <p className="text-sm font-semibold text-slate-700">Check-in recorded.</p>
+          <p className="text-sm text-slate-500">
+            This session is in Baseline Mode — your reading was saved for research purposes. Fatigue risk and rest suggestions are not shown during baseline data collection.
+          </p>
         </div>
-      </div>
+      ) : (
+        <div className={`card p-6 space-y-4 border-l-4 ${
+          checkin.risk_level === "High" ? "border-l-red-500" : checkin.risk_level === "Medium" ? "border-l-amber-500" : "border-l-green-500"
+        }`}>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{icon}</span>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">{checkin.dominant_issue}</p>
+              <h2 className="text-lg font-bold text-slate-900">{checkin.selected_prompt}</h2>
+            </div>
+          </div>
+          <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 rounded-lg p-3">{checkin.instruction}</p>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500">Duration: <strong className="text-slate-700">{checkin.duration}</strong></span>
+            <span className="text-xs text-slate-500">Total Risk Score: <strong className="text-slate-700">{checkin.total_risk_score} / 100</strong></span>
+          </div>
+          {checkin.risk_level !== "Low" && (
+            <Link href={feedbackHref}
+              className="block w-full text-center bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-lg transition-colors text-sm mt-2">
+              Start Micro-Rest →
+            </Link>
+          )}
+        </div>
+      )}
+
+      {checkin.session_mode !== "Baseline" && (
+        <div className="card p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-slate-700">Risk Score Breakdown</h3>
+          <div className="space-y-2">
+            {scoreRows.map(({ label, raw, risk: r }) => (
+              <div key={label} className="flex items-center gap-3">
+                <span className="text-xs text-slate-500 w-44 shrink-0">{label}</span>
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((dot) => (
+                    <span key={dot} className={`w-3 h-3 rounded-full ${dot < r ? (r === 2 ? "bg-red-500" : "bg-amber-400") : "bg-slate-100"}`} />
+                  ))}
+                </div>
+                <span className={`text-xs font-semibold ml-1 ${r === 2 ? "text-red-600" : r === 1 ? "text-amber-600" : "text-slate-400"}`}>
+                  {r === 2 ? "High" : r === 1 ? "Medium" : "Low"} ({raw})
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card p-5 space-y-2">
         <h3 className="text-sm font-semibold text-slate-700">Reading Details ({checkin.participant_id})</h3>

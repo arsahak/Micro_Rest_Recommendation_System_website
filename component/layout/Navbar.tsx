@@ -23,10 +23,11 @@ export default function Navbar() {
   }, [path]);
 
   return (
-    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <nav className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <div className="h-0.5 bg-linear-to-r from-teal-500 via-teal-400 to-teal-200" />
       <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-sky-600 min-w-0 mr-2">
-          <span className="text-xl shrink-0">💤</span>
+        <Link href="/" className="flex items-center gap-2 font-semibold text-teal-600 min-w-0 mr-2">
+          <span className="icon-badge-sm shrink-0">💤</span>
           <span className="text-xs sm:text-sm leading-tight truncate max-w-35 sm:max-w-65 md:max-w-none" title="Micro_Rest_Recommendation_System">
             Micro_Rest_Recommendation_System
           </span>
@@ -40,7 +41,7 @@ export default function Navbar() {
               href={href}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                 path === href
-                  ? "bg-sky-50 text-sky-700"
+                  ? "bg-teal-50 text-teal-700"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >
@@ -72,7 +73,7 @@ export default function Navbar() {
               href={href}
               className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 path === href
-                  ? "bg-sky-50 text-sky-700"
+                  ? "bg-teal-50 text-teal-700"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >

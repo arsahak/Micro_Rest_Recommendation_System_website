@@ -15,7 +15,7 @@ export default async function FeedbackPage({
         <span className="text-4xl">✅</span>
         <h2 className="text-xl font-bold text-slate-900">No Check-in Selected</h2>
         <p className="text-sm text-slate-500">Open a check-in from your history to leave feedback on its micro-rest prompt.</p>
-        <Link href="/history" className="inline-block bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+        <Link href="/history" className="inline-block bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
           View History →
         </Link>
       </div>
@@ -35,7 +35,7 @@ export default async function FeedbackPage({
           <span className="text-4xl">📝</span>
           <h2 className="text-xl font-bold text-slate-900">Feedback Already Submitted</h2>
           <p className="text-sm text-slate-500">This check-in already has feedback recorded.</p>
-          <Link href="/history" className="inline-block bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
+          <Link href="/history" className="inline-block bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors">
             View History →
           </Link>
         </div>
@@ -58,7 +58,7 @@ export default async function FeedbackPage({
       <div className="max-w-md mx-auto px-4 py-20 text-center space-y-4">
         <h2 className="text-xl font-bold text-slate-900">Could Not Load Check-in</h2>
         <p className="text-sm text-slate-500">{error instanceof ApiError ? error.message : "Backend unreachable."}</p>
-        <Link href="/history" className="text-sm text-sky-600 hover:text-sky-800 font-medium">← Back to History</Link>
+        <Link href="/history" className="text-sm text-teal-600 hover:text-teal-800 font-medium">← Back to History</Link>
       </div>
     );
   }

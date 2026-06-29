@@ -19,7 +19,7 @@ function Scale({ label, min, max, value, onChange, hint }: {
         {Array.from({ length: max - min + 1 }, (_, i) => i + min).map((n) => (
           <button key={n} type="button" onClick={() => onChange(n)}
             className={`flex-1 h-8 sm:h-9 rounded-md text-xs sm:text-sm font-semibold border transition-colors ${
-              value === n ? "bg-sky-600 border-sky-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-sky-300"
+              value === n ? "bg-teal-600 border-teal-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-teal-300"
             }`}>
             {n}
           </button>
@@ -82,14 +82,14 @@ export default function BaselineForm({ participants }: { participants: string[] 
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Participant ID</label>
             <select value={form.participant_id} onChange={(e) => set("participant_id", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
               {participants.length === 0 ? <option>P01</option> : participants.map((p) => <option key={p}>{p}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Time Point</label>
             <select value={form.time_point} onChange={(e) => set("time_point", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
               {TIME_POINTS.map((t) => <option key={t}>{t}</option>)}
             </select>
           </div>
@@ -98,19 +98,19 @@ export default function BaselineForm({ participants }: { participants: string[] 
           <label className="text-sm font-medium text-slate-700">Heart Rate (bpm)</label>
           <input type="number" min={40} max={200} required placeholder="e.g. 72" value={form.hr}
             onChange={(e) => set("hr", e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Sitting Duration (min)</label>
             <input type="number" min={0} required placeholder="e.g. 50" value={form.sitting_duration_min}
               onChange={(e) => set("sitting_duration_min", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Rest Behaviour</label>
             <select value={form.rest_behavior} onChange={(e) => set("rest_behavior", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
               {["Free rest", "No rest", "Normal rest"].map((r) => <option key={r}>{r}</option>)}
             </select>
           </div>
@@ -126,7 +126,7 @@ export default function BaselineForm({ participants }: { participants: string[] 
       </div>
 
       <button type="submit" disabled={submitting}
-        className="w-full bg-sky-600 hover:bg-sky-700 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors text-sm">
+        className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors text-sm">
         {submitting ? "Saving..." : "Save Baseline Entry"}
       </button>
     </form>

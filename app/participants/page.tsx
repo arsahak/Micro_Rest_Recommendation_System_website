@@ -3,7 +3,7 @@ import { ApiError, getBaselineSummaries, getParticipantSummary, getParticipants 
 import AddParticipantForm from "./AddParticipantForm";
 
 const phaseBadge: Record<string, string> = {
-  "Prototype-use": "bg-sky-50 text-sky-700",
+  "Prototype-use": "bg-teal-50 text-teal-700",
   "Baseline": "bg-amber-50 text-amber-700",
   "Completed": "bg-slate-100 text-slate-500",
 };
@@ -60,8 +60,8 @@ export default async function ParticipantsPage() {
             </div>
             {notes && <p className="text-xs text-slate-400">{notes}</p>}
             <div className="flex gap-4 pt-1">
-              <Link href={`/baseline?pid=${id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Baseline →</Link>
-              <Link href={`/checkin?pid=${id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Check-in →</Link>
+              <Link href={`/baseline?pid=${id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">Baseline →</Link>
+              <Link href={`/checkin?pid=${id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">Check-in →</Link>
             </div>
           </div>
         ))}
@@ -93,8 +93,8 @@ export default async function ParticipantsPage() {
                   <td className="px-4 py-3 text-xs text-slate-400">{notes || "—"}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      <Link href={`/baseline?pid=${id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Baseline</Link>
-                      <Link href={`/checkin?pid=${id}`} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Check-in</Link>
+                      <Link href={`/baseline?pid=${id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">Baseline</Link>
+                      <Link href={`/checkin?pid=${id}`} className="text-xs text-teal-600 hover:text-teal-800 font-medium">Check-in</Link>
                     </div>
                   </td>
                 </tr>

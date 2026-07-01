@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createCheckinAction } from "./actions";
 import SessionPanel from "@/component/session/SessionPanel";
+import { useAuth } from "@/context/AuthContext";
 import type { Session } from "@/lib/api";
 
 const TIME_POINTS = [
@@ -54,15 +56,13 @@ function ScaleInput({
   );
 }
 
-export default function CheckinForm({
-  participants,
-}: {
-  participants: string[];
-}) {
+export default function CheckinForm() {
+  const { participantId, isLoggedIn, mounted } = useAuth();
+  const router = useRouter();
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
-    participant_id: participants[0] ?? "P01",
     time_point: "11:00 AM",
     current_hr: "",
     fatigue_score: 0,
@@ -75,8 +75,6 @@ export default function CheckinForm({
   const set = (k: string, v: string | number) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  // Auto-fill from the active session once per participant switch (Section 7 input design);
-  // the user can still edit the fields afterward without them being overwritten on every heartbeat.
   const handleSessionLoaded = (session: Session) => {
     setForm((f) => ({
       ...f,
@@ -87,10 +85,11 @@ export default function CheckinForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!participantId) return;
     setSubmitting(true);
     setError(null);
     const result = await createCheckinAction({
-      participant_id: form.participant_id,
+      participant_id: participantId,
       time_point: form.time_point,
       current_hr: Number(form.current_hr),
       fatigue_score: form.fatigue_score,
@@ -102,12 +101,20 @@ export default function CheckinForm({
         ? Number(form.screen_exposure_min)
         : undefined,
     });
-    // If we get here, the server action did NOT redirect — meaning it failed
     if (result && !result.success) {
       setError(result.message);
       setSubmitting(false);
     }
   };
+
+  // Wait for auth to restore from localStorage before rendering
+  if (!mounted || !isLoggedIn || !participantId) {
+    return (
+      <div className="card p-8 text-center text-sm text-slate-400">
+        Loading…
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -122,29 +129,26 @@ export default function CheckinForm({
           Session Context
         </h2>
 
+        {/* Locked participant display */}
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">
-            Participant ID
-          </label>
-          <select
-            value={form.participant_id}
-            onChange={(e) => set("participant_id", e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-          >
-            {participants.length === 0 ? (
-              <option>P01</option>
-            ) : (
-              participants.map((p) => <option key={p}>{p}</option>)
-            )}
-          </select>
+          <label className="text-sm font-medium text-slate-700">Participant ID</label>
+          <div className="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50">
+            <span className="w-6 h-6 rounded-full bg-teal-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+              {participantId[0]}
+            </span>
+            <span className="text-sm font-semibold text-slate-800">{participantId}</span>
+            <span className="ml-auto text-xs text-slate-400">Logged in</span>
+          </div>
         </div>
 
-        <SessionPanel key={form.participant_id} participantId={form.participant_id} onSessionLoaded={handleSessionLoaded} />
+        <SessionPanel
+          key={participantId}
+          participantId={participantId}
+          onSessionLoaded={handleSessionLoaded}
+        />
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">
-            Time Point
-          </label>
+          <label className="text-sm font-medium text-slate-700">Time Point</label>
           <select
             value={form.time_point}
             onChange={(e) => set("time_point", e.target.value)}
@@ -164,9 +168,7 @@ export default function CheckinForm({
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-slate-700">
             Current Heart Rate{" "}
-            <span className="text-slate-400 font-normal">
-              (bpm — read from Fitbit)
-            </span>
+            <span className="text-slate-400 font-normal">(bpm — read from Fitbit)</span>
           </label>
           <input
             type="number"
@@ -190,32 +192,28 @@ export default function CheckinForm({
         </h2>
         <ScaleInput
           label="Fatigue Score (Samn-Perelli)"
-          min={1}
-          max={7}
+          min={1} max={7}
           value={form.fatigue_score}
           onChange={(v) => set("fatigue_score", v)}
           hint="1 = fully alert · 7 = completely exhausted"
         />
         <ScaleInput
           label="Sleepiness Score (KSS)"
-          min={1}
-          max={9}
+          min={1} max={9}
           value={form.kss_score}
           onChange={(v) => set("kss_score", v)}
           hint="1 = extremely alert · 9 = extremely sleepy"
         />
         <ScaleInput
           label="Eye Strain Score"
-          min={1}
-          max={5}
+          min={1} max={5}
           value={form.eye_strain_score}
           onChange={(v) => set("eye_strain_score", v)}
           hint="1 = no strain · 5 = severe strain"
         />
         <ScaleInput
           label="Body Discomfort Score"
-          min={1}
-          max={5}
+          min={1} max={5}
           value={form.body_discomfort_score}
           onChange={(v) => set("body_discomfort_score", v)}
           hint="1 = no discomfort · 5 = severe discomfort"
@@ -228,9 +226,7 @@ export default function CheckinForm({
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">
-              Sitting Duration (min)
-            </label>
+            <label className="text-sm font-medium text-slate-700">Sitting Duration (min)</label>
             <input
               type="number"
               min={0}
@@ -262,9 +258,9 @@ export default function CheckinForm({
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white font-semibold py-3 rounded-lg transition-colors text-sm"
+        className="w-full btn-primary py-3 text-sm"
       >
-        {submitting ? "Calculating..." : "Calculate Fatigue Risk →"}
+        {submitting ? "Calculating…" : "Calculate Fatigue Risk →"}
       </button>
     </form>
   );

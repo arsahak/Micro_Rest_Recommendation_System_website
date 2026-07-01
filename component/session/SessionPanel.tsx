@@ -27,11 +27,14 @@ export default function SessionPanel({
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const loadedForParticipant = useRef<string | null>(null);
+  // Track previous due state so we only fire the notification on the rising edge
+  const prevDueRef = useRef<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setStatus(null);
+    prevDueRef.current = false;
     getActiveSession(participantId)
       .then((res) => {
         if (cancelled) return;
@@ -65,7 +68,18 @@ export default function SessionPanel({
 
     const decisionPoint = setInterval(() => {
       getCheckinStatus(session.session_id)
-        .then((res) => setStatus(res.data))
+        .then((res) => {
+          const newStatus = res.data;
+          // Fire a browser notification on the rising edge (false → true)
+          if (newStatus.due && !prevDueRef.current && typeof window !== "undefined" && Notification.permission === "granted") {
+            new Notification("Fatigue Check-in Due", {
+              body: "Please complete a quick fatigue check-in.",
+              icon: "/favicon.ico",
+            });
+          }
+          prevDueRef.current = newStatus.due;
+          setStatus(newStatus);
+        })
         .catch(() => {});
     }, DECISION_POINT_INTERVAL_MS);
 
@@ -82,7 +96,6 @@ export default function SessionPanel({
       setSession(res.data);
       onSessionLoaded?.(res.data);
     } catch (error) {
-      // Backend unreachable or participant missing — leave session as not started.
       void error;
     } finally {
       setStarting(false);
@@ -98,6 +111,7 @@ export default function SessionPanel({
     }
     setSession(null);
     setStatus(null);
+    prevDueRef.current = false;
   };
 
   const handleSnooze = async () => {
@@ -107,6 +121,7 @@ export default function SessionPanel({
     } catch (error) {
       void error;
     }
+    prevDueRef.current = false;
     setStatus((s) => (s ? { ...s, due: false } : s));
   };
 
@@ -122,7 +137,7 @@ export default function SessionPanel({
           disabled={starting}
           className="bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shrink-0"
         >
-          {starting ? "Starting..." : "Start Work Session"}
+          {starting ? "Starting…" : "Start Work Session"}
         </button>
       </div>
     );
@@ -131,7 +146,7 @@ export default function SessionPanel({
   return (
     <div className="space-y-3">
       <div className="card p-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
           <span className={`px-2 py-0.5 rounded-full font-semibold ${session.session_mode === "Baseline" ? "bg-slate-100 text-slate-600" : "bg-teal-100 text-teal-700"}`}>
             {session.session_mode} Mode
           </span>
@@ -150,14 +165,33 @@ export default function SessionPanel({
 
       {status?.due && (
         <div className="card p-4 bg-amber-50 border-amber-200 flex items-center justify-between gap-3">
-          <p className="text-sm text-amber-800">Please complete a quick fatigue check-in.</p>
-          <button
-            type="button"
-            onClick={handleSnooze}
-            className="text-xs text-amber-700 hover:text-amber-900 font-semibold px-3 py-1.5 rounded-lg border border-amber-300 hover:bg-amber-100 transition-colors shrink-0"
-          >
-            Snooze
-          </button>
+          <div className="space-y-0.5">
+            <p className="text-sm font-semibold text-amber-800">Check-in due now</p>
+            {status.trigger_reason.length > 0 && (
+              <p className="text-xs text-amber-600">{status.trigger_reason.join(" · ")}</p>
+            )}
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <a
+              href="/checkin"
+              className="text-xs text-white bg-amber-500 hover:bg-amber-600 font-semibold px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Check in
+            </a>
+            <button
+              type="button"
+              onClick={handleSnooze}
+              className="text-xs text-amber-700 hover:text-amber-900 font-semibold px-3 py-1.5 rounded-lg border border-amber-300 hover:bg-amber-100 transition-colors"
+            >
+              Snooze
+            </button>
+          </div>
+        </div>
+      )}
+
+      {status?.escalate && (
+        <div className="card p-3 bg-red-50 border-red-200 text-xs text-red-700 font-medium">
+          ⚠️ Two consecutive High-risk readings — an extended rest is recommended.
         </div>
       )}
 

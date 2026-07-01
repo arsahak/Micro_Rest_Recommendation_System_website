@@ -231,4 +231,15 @@ export const endSession = (session_id: string) => put<{ success: boolean; data: 
 export const getCheckinStatus = (session_id: string) => get<{ success: boolean; data: CheckinStatus }>(`/api/sessions/${session_id}/checkin-status`);
 export const snoozeCheckin = (session_id: string) => put<{ success: boolean; data: { notification: unknown; session: Session } }>(`/api/sessions/${session_id}/snooze`, {});
 
+// ---------- Participant Auth ----------
+export interface ParticipantAuthResponse {
+  token: string;
+  participant_id: string;
+  participant_label: string | null;
+  study_phase: string;
+}
+
+export const participantLogin = (participant_id: string, pin: string) =>
+  post<{ success: boolean; data: ParticipantAuthResponse }>("/api/participant-auth/login", { participant_id, pin });
+
 export { put, del };

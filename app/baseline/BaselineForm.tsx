@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createBaselineEntryAction } from "./actions";
 
 const TIME_POINTS = ["Before Work", "11:00 AM", "1:00 PM", "3:00 PM", "After Work"];
@@ -29,12 +28,10 @@ function Scale({ label, min, max, value, onChange, hint }: {
   );
 }
 
-export default function BaselineForm({ participants }: { participants: string[] }) {
-  const router = useRouter();
+export default function BaselineForm({ participantId, onSaved }: { participantId: string; onSaved?: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [form, setForm] = useState({
-    participant_id: participants[0] ?? "P01",
     time_point: "Before Work",
     hr: "",
     fatigue_score: 0,
@@ -51,7 +48,7 @@ export default function BaselineForm({ participants }: { participants: string[] 
     setSubmitting(true);
     setResult(null);
     const res = await createBaselineEntryAction({
-      participant_id: form.participant_id,
+      participant_id: participantId,
       time_point: form.time_point,
       hr: Number(form.hr),
       fatigue_score: form.fatigue_score,
@@ -63,9 +60,7 @@ export default function BaselineForm({ participants }: { participants: string[] 
     });
     setResult(res);
     setSubmitting(false);
-    if (res.success) {
-      router.refresh();
-    }
+    if (res.success) onSaved?.();
   };
 
   return (
@@ -78,14 +73,20 @@ export default function BaselineForm({ participants }: { participants: string[] 
 
       <div className="card p-5 space-y-4">
         <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Context</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">Participant ID</label>
-            <select value={form.participant_id} onChange={(e) => set("participant_id", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
-              {participants.length === 0 ? <option>P01</option> : participants.map((p) => <option key={p}>{p}</option>)}
-            </select>
+
+        {/* Locked participant display */}
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-slate-700">Participant ID</label>
+          <div className="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50">
+            <span className="w-6 h-6 rounded-full bg-teal-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+              {participantId[0]}
+            </span>
+            <span className="text-sm font-semibold text-slate-800">{participantId}</span>
+            <span className="ml-auto text-xs text-slate-400">Logged in</span>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Time Point</label>
             <select value={form.time_point} onChange={(e) => set("time_point", e.target.value)}
@@ -93,26 +94,27 @@ export default function BaselineForm({ participants }: { participants: string[] 
               {TIME_POINTS.map((t) => <option key={t}>{t}</option>)}
             </select>
           </div>
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">Heart Rate (bpm)</label>
-          <input type="number" min={40} max={200} required placeholder="e.g. 72" value={form.hr}
-            onChange={(e) => set("hr", e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">Sitting Duration (min)</label>
-            <input type="number" min={0} required placeholder="e.g. 50" value={form.sitting_duration_min}
-              onChange={(e) => set("sitting_duration_min", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" />
-          </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Rest Behaviour</label>
             <select value={form.rest_behavior} onChange={(e) => set("rest_behavior", e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
               {["Free rest", "No rest", "Normal rest"].map((r) => <option key={r}>{r}</option>)}
             </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">Heart Rate (bpm)</label>
+            <input type="number" min={40} max={200} required placeholder="e.g. 72" value={form.hr}
+              onChange={(e) => set("hr", e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">Sitting Duration (min)</label>
+            <input type="number" min={0} required placeholder="e.g. 50" value={form.sitting_duration_min}
+              onChange={(e) => set("sitting_duration_min", e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500" />
           </div>
         </div>
       </div>

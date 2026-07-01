@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Checkin } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 const POLL_INTERVAL_MS = 10000;
 const LAST_SEEN_KEY = "fatigue_alerts_last_seen_at";
@@ -20,6 +21,7 @@ function timeAgo(iso: string): string {
 }
 
 export default function NotificationBell() {
+  const { participantId, isLoggedIn } = useAuth();
   const [alerts, setAlerts] = useState<Checkin[]>([]);
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -27,8 +29,9 @@ export default function NotificationBell() {
   const alertsRef = useRef<Checkin[]>([]);
 
   const fetchAlerts = async () => {
+    if (!isLoggedIn || !participantId) return;
     try {
-      const res = await fetch("/api/alerts", { cache: "no-store" });
+      const res = await fetch(`/api/alerts?participant_id=${participantId}`, { cache: "no-store" });
       const body = await res.json();
       const data: Checkin[] = body.data ?? [];
 
@@ -51,10 +54,11 @@ export default function NotificationBell() {
   };
 
   useEffect(() => {
+    if (!isLoggedIn || !participantId) return;
     fetchAlerts();
     const interval = setInterval(fetchAlerts, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, []);
+  }, [isLoggedIn, participantId]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

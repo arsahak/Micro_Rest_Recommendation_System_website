@@ -22,8 +22,8 @@ export async function createCheckinAction(data: {
 }): Promise<CheckinFormState> {
   try {
     const res = await createCheckin(data);
+    revalidatePath("/user");
     revalidatePath("/history");
-    revalidatePath("/dashboard");
     redirect(`/prompt/${res.data.checkin_id}`);
   } catch (error) {
     if (error instanceof ApiError) {

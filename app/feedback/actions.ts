@@ -20,8 +20,8 @@ export async function submitFeedbackAction(data: {
 }): Promise<FeedbackFormState> {
   try {
     await createFeedback(data);
+    revalidatePath("/user");
     revalidatePath("/history");
-    revalidatePath("/dashboard");
   } catch (error) {
     return { success: false, message: error instanceof ApiError ? error.message : "Failed to submit feedback." };
   }

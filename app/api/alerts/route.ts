@@ -14,8 +14,12 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20);
 
-    return NextResponse.json({ success: true, data: alerts });
+    return NextResponse.json({ success: true, data: alerts }, {
+      headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+    });
   } catch {
-    return NextResponse.json({ success: false, data: [] });
+    return NextResponse.json({ success: false, data: [] }, {
+      headers: { "Cache-Control": "no-store" },
+    });
   }
 }

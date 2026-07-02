@@ -1,8 +1,3 @@
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  process.env.API_BASE_URL ||
-  "http://localhost:8000";
-
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -11,8 +6,24 @@ export class ApiError extends Error {
   }
 }
 
+// Server-side: call backend directly.
+// Browser-side: route through the Next.js proxy (/api/proxy/...) so the
+// browser never needs a direct connection to the backend — this prevents
+// ERR_CONNECTION_REFUSED on Vercel and avoids CORS issues.
+function resolveUrl(path: string): string {
+  if (typeof window !== "undefined") {
+    // /api/participant-auth/login  →  /api/proxy/participant-auth/login
+    return path.replace(/^\/api\//, "/api/proxy/");
+  }
+  const base =
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    process.env.API_BASE_URL ||
+    "http://localhost:8000";
+  return `${base}${path}`;
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(resolveUrl(path), {
     ...options,
     headers: { "Content-Type": "application/json", ...options.headers },
     cache: "no-store",

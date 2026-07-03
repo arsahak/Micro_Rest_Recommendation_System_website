@@ -1,19 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createCheckinAction } from "./actions";
 import SessionPanel from "@/component/session/SessionPanel";
 import { useAuth } from "@/context/AuthContext";
 import type { Session } from "@/lib/api";
 
-const TIME_POINTS = [
-  "Before Work",
-  "11:00 AM",
-  "1:00 PM",
-  "3:00 PM",
-  "After Work",
-];
+const TIME_PRESETS = ["Before Work", "11:00 AM", "1:00 PM", "3:00 PM", "After Work"];
+
+function fmt24to12(hhmm: string): string {
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return hhmm;
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+}
+
+function presetToHHMM(preset: string): string {
+  const match = preset.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+  if (!match) return "";
+  let h = parseInt(match[1]);
+  const m = match[2];
+  const ampm = match[3].toUpperCase();
+  if (ampm === "PM" && h !== 12) h += 12;
+  if (ampm === "AM" && h === 12) h = 0;
+  return `${h.toString().padStart(2, "0")}:${m}`;
+}
 
 function ScaleInput({
   label,
@@ -62,8 +76,9 @@ export default function CheckinForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [timeInput, setTimeInput] = useState("11:00"); // HH:MM for <input type="time">
   const [form, setForm] = useState({
-    time_point: "11:00 AM",
+    time_point: "11:00 AM", // overwritten on mount with real local time
     current_hr: "",
     fatigue_score: 0,
     kss_score: 0,
@@ -74,6 +89,14 @@ export default function CheckinForm() {
   });
   const set = (k: string, v: string | number) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  // Auto-set time point to current local time on mount
+  useEffect(() => {
+    const now = new Date();
+    const hhmm = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    setTimeInput(hhmm);
+    setForm((f) => ({ ...f, time_point: fmt24to12(hhmm) }));
+  }, []);
 
   const handleSessionLoaded = (session: Session) => {
     setForm((f) => ({
@@ -147,17 +170,54 @@ export default function CheckinForm() {
           onSessionLoaded={handleSessionLoaded}
         />
 
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700">Time Point</label>
-          <select
-            value={form.time_point}
-            onChange={(e) => set("time_point", e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-          >
-            {TIME_POINTS.map((t) => (
-              <option key={t}>{t}</option>
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between">
+            <label className="text-sm font-medium text-slate-700">Time Point</label>
+            {form.time_point && (
+              <span className="text-xs font-semibold text-teal-600">{form.time_point}</span>
+            )}
+          </div>
+
+          {/* Preset quick-select chips */}
+          <div className="flex flex-wrap gap-1.5">
+            {TIME_PRESETS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  set("time_point", t);
+                  const hhmm = presetToHHMM(t);
+                  if (hhmm) setTimeInput(hhmm);
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  form.time_point === t
+                    ? "bg-teal-600 border-teal-600 text-white"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
+                }`}
+              >
+                {t}
+              </button>
             ))}
-          </select>
+          </div>
+
+          {/* Custom time picker */}
+          <input
+            type="time"
+            value={timeInput}
+            onChange={(e) => {
+              const val = e.target.value;
+              setTimeInput(val);
+              set("time_point", fmt24to12(val));
+            }}
+            className={`w-full border rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              !TIME_PRESETS.includes(form.time_point)
+                ? "border-teal-400"
+                : "border-slate-200"
+            }`}
+          />
+          <p className="text-xs text-slate-400">
+            Auto-set to now — select a preset or pick any custom time.
+          </p>
         </div>
       </div>
 

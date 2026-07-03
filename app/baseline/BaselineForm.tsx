@@ -1,9 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createBaselineEntryAction } from "./actions";
 
-const TIME_POINTS = ["Before Work", "11:00 AM", "1:00 PM", "3:00 PM", "After Work"];
+const TIME_PRESETS = ["Before Work", "11:00 AM", "1:00 PM", "3:00 PM", "After Work"];
+
+function fmt24to12(hhmm: string): string {
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return hhmm;
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+}
+
+function presetToHHMM(preset: string): string {
+  const match = preset.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+  if (!match) return "";
+  let h = parseInt(match[1]);
+  const m = match[2];
+  const ampm = match[3].toUpperCase();
+  if (ampm === "PM" && h !== 12) h += 12;
+  if (ampm === "AM" && h === 12) h = 0;
+  return `${h.toString().padStart(2, "0")}:${m}`;
+}
 
 function Scale({ label, min, max, value, onChange, hint }: {
   label: string; min: number; max: number; value: number; onChange: (v: number) => void; hint?: string;
@@ -31,8 +51,9 @@ function Scale({ label, min, max, value, onChange, hint }: {
 export default function BaselineForm({ participantId, onSaved }: { participantId: string; onSaved?: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [timeInput, setTimeInput] = useState("11:00"); // HH:MM for <input type="time">
   const [form, setForm] = useState({
-    time_point: "Before Work",
+    time_point: "11:00 AM", // overwritten on mount with real local time
     hr: "",
     fatigue_score: 0,
     kss_score: 0,
@@ -42,6 +63,13 @@ export default function BaselineForm({ participantId, onSaved }: { participantId
     rest_behavior: "Free rest",
   });
   const set = (k: string, v: string | number) => setForm((f) => ({ ...f, [k]: v }));
+
+  useEffect(() => {
+    const now = new Date();
+    const hhmm = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+    setTimeInput(hhmm);
+    setForm((f) => ({ ...f, time_point: fmt24to12(hhmm) }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,21 +114,52 @@ export default function BaselineForm({ participantId, onSaved }: { participantId
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
+        {/* Time Point — preset chips + custom time picker */}
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between">
             <label className="text-sm font-medium text-slate-700">Time Point</label>
-            <select value={form.time_point} onChange={(e) => set("time_point", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
-              {TIME_POINTS.map((t) => <option key={t}>{t}</option>)}
-            </select>
+            {form.time_point && (
+              <span className="text-xs font-semibold text-teal-600">{form.time_point}</span>
+            )}
           </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">Rest Behaviour</label>
-            <select value={form.rest_behavior} onChange={(e) => set("rest_behavior", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
-              {["Free rest", "No rest", "Normal rest"].map((r) => <option key={r}>{r}</option>)}
-            </select>
+          <div className="flex flex-wrap gap-1.5">
+            {TIME_PRESETS.map((t) => (
+              <button key={t} type="button"
+                onClick={() => {
+                  set("time_point", t);
+                  const hhmm = presetToHHMM(t);
+                  if (hhmm) setTimeInput(hhmm);
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  form.time_point === t
+                    ? "bg-teal-600 border-teal-600 text-white"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700"
+                }`}>
+                {t}
+              </button>
+            ))}
           </div>
+          <input
+            type="time"
+            value={timeInput}
+            onChange={(e) => {
+              const val = e.target.value;
+              setTimeInput(val);
+              set("time_point", fmt24to12(val));
+            }}
+            className={`w-full border rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+              !TIME_PRESETS.includes(form.time_point) ? "border-teal-400" : "border-slate-200"
+            }`}
+          />
+          <p className="text-xs text-slate-400">Auto-set to now — select a preset or pick any custom time.</p>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-slate-700">Rest Behaviour</label>
+          <select value={form.rest_behavior} onChange={(e) => set("rest_behavior", e.target.value)}
+            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500">
+            {["Free rest", "No rest", "Normal rest"].map((r) => <option key={r}>{r}</option>)}
+          </select>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

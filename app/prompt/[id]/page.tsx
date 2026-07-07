@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ApiError, getCheckin } from "@/lib/api";
+import RiskNotifier from "./RiskNotifier";
 
 const riskColor: Record<string, string> = { Low: "badge-low", Medium: "badge-medium", High: "badge-high" };
 
@@ -45,6 +46,10 @@ export default async function PromptOutputPage({ params }: { params: Promise<{ i
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+
+      {checkin.session_mode !== "Baseline" && (
+        <RiskNotifier level={checkin.risk_level as "Low" | "Medium" | "High"} />
+      )}
 
       <div className="flex items-center justify-between">
         <div>

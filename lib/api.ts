@@ -6,13 +6,10 @@ export class ApiError extends Error {
   }
 }
 
-// Server-side: call backend directly.
-// Browser-side: route through the Next.js proxy (/api/proxy/...) so the
-// browser never needs a direct connection to the backend — this prevents
-// ERR_CONNECTION_REFUSED on Vercel and avoids CORS issues.
+// Browser: route through Next.js proxy (same origin, avoids CORS / ERR_CONNECTION_REFUSED).
+// Server: call backend directly.
 function resolveUrl(path: string): string {
   if (typeof window !== "undefined") {
-    // /api/participant-auth/login  →  /api/proxy/participant-auth/login
     return path.replace(/^\/api\//, "/api/proxy/");
   }
   const base =
@@ -22,10 +19,37 @@ function resolveUrl(path: string): string {
   return `${base}${path}`;
 }
 
+// Returns "Bearer <token>" for the current request context, or null if not logged in.
+// Client: reads the JWT saved to localStorage at login time ("mrrs_auth" → token).
+// Server (Actions, Route Handlers): reads from the "mrrs_token" cookie set at login.
+async function getAuthHeader(): Promise<string | null> {
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("mrrs_auth");
+      const parsed = JSON.parse(raw ?? "{}") as { token?: string };
+      if (parsed.token) return `Bearer ${parsed.token}`;
+    } catch {}
+    return null;
+  }
+  // Server-side — only works inside a request context (Action / Route Handler)
+  try {
+    const { cookies } = await import("next/headers");
+    const jar = await cookies();
+    const raw = jar.get("mrrs_token")?.value;
+    if (raw) return `Bearer ${decodeURIComponent(raw)}`;
+  } catch {}
+  return null;
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const auth = await getAuthHeader();
   const res = await fetch(resolveUrl(path), {
     ...options,
-    headers: { "Content-Type": "application/json", ...options.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...(auth ? { Authorization: auth } : {}),
+      ...options.headers,
+    },
     cache: "no-store",
   });
 
@@ -124,7 +148,8 @@ export interface Checkin {
 }
 
 export const getCheckins = (filters?: { participant_id?: string; risk_level?: string }) => {
-  const params = new URLSearchParams(filters as Record<string, string>).toString();
+  const clean = Object.fromEntries(Object.entries(filters ?? {}).filter(([, v]) => v !== undefined));
+  const params = new URLSearchParams(clean).toString();
   return get<{ success: boolean; count: number; data: Checkin[] }>(`/api/checkins${params ? `?${params}` : ""}`);
 };
 export const getCheckin = (checkin_id: string) => get<{ success: boolean; data: Checkin }>(`/api/checkins/${checkin_id}`);

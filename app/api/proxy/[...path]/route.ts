@@ -13,9 +13,15 @@ async function handler(
   const qs = request.nextUrl.searchParams.toString();
   const targetUrl = `${BACKEND}/api/${path.join("/")}${qs ? `?${qs}` : ""}`;
 
+  const proxyHeaders: Record<string, string> = { "Content-Type": "application/json" };
+
+  // Forward the JWT from the browser so the backend can authenticate the request
+  const auth = request.headers.get("Authorization");
+  if (auth) proxyHeaders["Authorization"] = auth;
+
   const init: RequestInit = {
     method: request.method,
-    headers: { "Content-Type": "application/json" },
+    headers: proxyHeaders,
     cache: "no-store",
   };
 

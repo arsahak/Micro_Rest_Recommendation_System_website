@@ -12,8 +12,8 @@ import {
   startSession,
 } from "@/lib/api";
 
-const HEARTBEAT_INTERVAL_MS = 60_000;
-const DECISION_POINT_INTERVAL_MS = 2 * 60_000;
+const HEARTBEAT_INTERVAL_MS = 60_000;          // 1 min — increment sitting/screen counters
+const DECISION_POINT_INTERVAL_MS = 10 * 60_000; // 10 min — evaluate notification conditions (spec Section 2)
 
 export default function SessionPanel({
   participantId,

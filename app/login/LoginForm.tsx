@@ -8,7 +8,7 @@ import { participantLogin } from "@/lib/api";
 export default function LoginForm() {
   const { login, requestNotificationPermission } = useAuth();
   const router = useRouter();
-  const [participantId, setParticipantId] = useState("P01");
+  const [participantId, setParticipantId] = useState("");
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

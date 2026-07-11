@@ -49,25 +49,29 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1">
-          {links.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                path === href || (href === "/user" && path.startsWith("/user"))
-                  ? "bg-teal-50 text-teal-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
+        <div className="flex items-center gap-1">
+          {/* Desktop nav links */}
+          <div className="hidden md:flex items-center gap-1">
+            {links.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                  path === href || (href === "/user" && path.startsWith("/user"))
+                    ? "bg-teal-50 text-teal-700"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
 
-          {mounted && isLoggedIn ? (
-            <>
-              <NotificationBell />
+          <NotificationBell />
+
+          {/* Desktop auth controls */}
+          <div className="hidden md:flex items-center gap-1">
+            {mounted && isLoggedIn ? (
               <div className="flex items-center gap-2 ml-1 pl-3 border-l border-slate-200">
                 <Link href="/user" className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-teal-50 hover:bg-teal-100 transition-colors">
                   <span className="w-5 h-5 rounded-full bg-teal-600 text-white text-xs font-bold flex items-center justify-center">
@@ -82,33 +86,27 @@ export default function Navbar() {
                   Sign out
                 </button>
               </div>
-            </>
-          ) : mounted ? (
-            <>
-              <NotificationBell />
+            ) : mounted ? (
               <Link href="/login" className="ml-2 btn-primary text-xs py-1.5 px-3">
                 Sign In
               </Link>
-            </>
-          ) : (
-            <NotificationBell />
-          )}
-        </div>
+            ) : null}
+          </div>
 
-        {/* Mobile controls */}
-        <div className="flex items-center gap-1 md:hidden">
-          <NotificationBell />
+          {/* Mobile avatar badge */}
           {mounted && isLoggedIn && (
-            <Link href="/user" className="flex items-center gap-1 px-2 py-1 rounded-md bg-teal-50">
+            <Link href="/user" className="flex items-center gap-1 px-2 py-1 rounded-md bg-teal-50 md:hidden">
               <span className="w-5 h-5 rounded-full bg-teal-600 text-white text-xs font-bold flex items-center justify-center">
                 {participantId?.[0]}
               </span>
             </Link>
           )}
+
+          {/* Mobile menu toggle */}
           <button
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
-            className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors md:hidden"
           >
             <span className="text-xl leading-none">{menuOpen ? "✕" : "☰"}</span>
           </button>

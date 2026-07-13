@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { participantLogin } from "@/lib/api";
 
 export default function LoginForm() {
-  const { login, requestNotificationPermission } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const [participantId, setParticipantId] = useState("");
   const [pin, setPin] = useState("");
@@ -25,8 +25,8 @@ export default function LoginForm() {
         studyPhase: res.data.study_phase,
         participantLabel: res.data.participant_label,
       });
-      // Ask for notification permission right after login
-      await requestNotificationPermission();
+      // Notification permission is no longer requested automatically here —
+      // the participant grants it explicitly via the button on /user.
       router.push("/user");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed. Check your ID and PIN.");

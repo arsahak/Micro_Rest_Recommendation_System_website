@@ -38,15 +38,16 @@ export default function SessionPanel({
   const [starting, setStarting] = useState(false);
   const [now, setNow] = useState<number>(() => Date.now());
   const loadedForParticipant = useRef<string | null>(null);
-  // Track previous due/escalate state so we only fire the notification on the rising edge
-  const prevDueRef = useRef<boolean>(false);
+  // Escalation (2 consecutive High-risk results) is a one-time flag — only
+  // notify on its rising edge. "Due" is a recurring reminder and intentionally
+  // has no such guard below: it renotifies on every decision-point poll for
+  // as long as a check-in remains outstanding.
   const prevEscalateRef = useRef<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setStatus(null);
-    prevDueRef.current = false;
     prevEscalateRef.current = false;
     getActiveSession(participantId)
       .then((res) => {
@@ -86,14 +87,16 @@ export default function SessionPanel({
           if (cancelled) return;
           const newStatus = res.data;
           const notifyReady = typeof window !== "undefined" && Notification.permission === "granted";
-          // Fire a browser notification on the rising edge (false → true)
-          if (newStatus.due && !prevDueRef.current && notifyReady) {
+          // Renotify on every poll while a check-in remains due — not just once —
+          // so the reminder keeps showing until the participant actually checks in.
+          if (newStatus.due && notifyReady) {
             new Notification("Fatigue Check-in Due", {
               body: "Please complete a quick fatigue check-in.",
               icon: "/favicon.ico",
               silent: true,
             });
           }
+          // Escalation stays rising-edge-only — it's a one-time flag, not a recurring reminder.
           if (newStatus.escalate && !prevEscalateRef.current && notifyReady) {
             new Notification("Extended Rest Recommended", {
               body: "Two consecutive High-risk readings — consider a longer break or pausing work.",
@@ -101,7 +104,6 @@ export default function SessionPanel({
               silent: true,
             });
           }
-          prevDueRef.current = newStatus.due;
           prevEscalateRef.current = newStatus.escalate;
           setStatus(newStatus);
         })
@@ -153,7 +155,6 @@ export default function SessionPanel({
     }
     setSession(null);
     setStatus(null);
-    prevDueRef.current = false;
   };
 
   const handleSnooze = async () => {
@@ -163,7 +164,6 @@ export default function SessionPanel({
     } catch (error) {
       void error;
     }
-    prevDueRef.current = false;
     setStatus((s) => (s ? { ...s, due: false } : s));
   };
 

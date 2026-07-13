@@ -261,7 +261,19 @@ export interface CheckinStatus {
   escalate: boolean;
 }
 
+export interface NotificationLogEntry {
+  notification_id: string;
+  session_id: string;
+  participant_id: string;
+  notification_type: "quick_checkin_notification" | "micro_rest_notification" | "extended_rest_recommendation";
+  trigger_reason: string[];
+  message: string;
+  user_action: "pending" | "acted" | "snoozed" | "dismissed";
+  createdAt: string;
+}
+
 export const startSession = (participant_id: string) => post<{ success: boolean; data: Session }>("/api/sessions", { participant_id });
+export const getMyNotifications = () => get<{ success: boolean; count: number; data: NotificationLogEntry[] }>("/api/sessions/notifications");
 export const getActiveSession = (participant_id: string) => get<{ success: boolean; data: Session }>(`/api/sessions/active/${participant_id}`);
 export const sendHeartbeat = (session_id: string, active_minutes: number) =>
   put<{ success: boolean; data: Session }>(`/api/sessions/${session_id}/heartbeat`, { active_minutes });

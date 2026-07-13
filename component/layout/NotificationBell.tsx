@@ -54,6 +54,13 @@ export default function NotificationBell() {
   };
 
   useEffect(() => {
+    // Clear immediately on identity change so a same-tab account switch
+    // (logout -> different participant logs in, both client-side navigations)
+    // never briefly shows the previous participant's stale alert list.
+    alertsRef.current = [];
+    setAlerts([]);
+    setUnread(0);
+
     if (!isLoggedIn || !participantId) return;
     fetchAlerts();
     const interval = setInterval(fetchAlerts, POLL_INTERVAL_MS);

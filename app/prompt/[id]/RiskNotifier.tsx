@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const MESSAGES: Record<"Low" | "Medium" | "High", string> = {
   Low: "Low Risk — No immediate rest needed. Keep it up!",
@@ -9,11 +9,18 @@ const MESSAGES: Record<"Low" | "Medium" | "High", string> = {
 };
 
 export default function RiskNotifier({ level }: { level: "Low" | "Medium" | "High" }) {
+  const firedRef = useRef(false);
+
   useEffect(() => {
+    // Guards against React Strict Mode's dev-only double-invoke of effects,
+    // which would otherwise fire this notification twice per check-in.
+    if (firedRef.current) return;
     if (typeof window === "undefined" || Notification.permission !== "granted") return;
+    firedRef.current = true;
     new Notification(`Fatigue Check Result: ${level} Risk`, {
       body: MESSAGES[level],
       icon: "/favicon.ico",
+      silent: true,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

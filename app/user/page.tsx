@@ -83,7 +83,17 @@ export default function UserDashboardPage() {
             <span>🔔</span> Notifications on
           </span>
         )}
+        {notificationPermission === "denied" && (
+          <span className="text-xs text-red-600 font-medium flex items-center gap-1.5 shrink-0" title="Blocked in browser settings — click the lock/info icon in your address bar to re-allow notifications for this site, then reload.">
+            <span>🔕</span> Notifications blocked
+          </span>
+        )}
       </div>
+      {notificationPermission === "denied" && (
+        <div className="card p-3 bg-red-50 border-red-200 text-xs text-red-700">
+          Notifications are blocked for this site in your browser. You won&apos;t see check-in reminders or risk alerts as pop-ups until you re-allow them: click the lock/info icon next to the address bar → Notifications → Allow, then reload this page.
+        </div>
+      )}
 
       {/* Work session */}
       <section className="space-y-3">

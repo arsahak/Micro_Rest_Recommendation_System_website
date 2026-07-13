@@ -1,6 +1,6 @@
 /**
  * Wrapper around `next dev` / `next build` that temporarily renames
- * middleware.ts so Next.js 16 only sees proxy.ts for route protection.
+ * middleware.ts so Next.js 16 only sees proxy.ts for route protection
  * (Next.js 16 errors when both middleware.ts and proxy.ts exist.)
  */
 import { spawn } from "child_process";

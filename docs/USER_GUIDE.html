@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>User Guide — Micro-Rest Recommendation System</title>
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #1a1f24;
+    --ink-soft: #5b6570;
+    --accent: #0d9488;
+    --accent-soft: #ecfbf9;
+    --line: #dfe5e8;
+    --line-soft: #eef1f3;
+    --code-bg: #f3f5f6;
+    --low-bg: #e7f5ee; --low-ink: #1e7a4d;
+    --med-bg: #fdf3df; --med-ink: #a06a10;
+    --high-bg: #fbe9e7; --high-ink: #b3372c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #12161a;
+      --ink: #e6ebee;
+      --ink-soft: #9aa7b0;
+      --accent: #2dd4bf;
+      --accent-soft: #10302c;
+      --line: #2a3238;
+      --line-soft: #1c2226;
+      --code-bg: #1a2024;
+      --low-bg: #12291b; --low-ink: #6bc98d;
+      --med-bg: #2e230f; --med-ink: #e0a94b;
+      --high-bg: #331714; --high-ink: #e8746a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--paper); }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    line-height: 1.65;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  h1 { font-size: 1.7rem; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .subtitle { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 32px; max-width: 68ch; }
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 38px 0 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  h2 .num {
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 9px;
+    border-radius: 100px;
+    font-weight: 700;
+  }
+  p { margin: 0 0 14px; max-width: 70ch; }
+  ul, ol { margin: 0 0 14px; padding-left: 1.3em; }
+  li { margin-bottom: 6px; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  .table-wrap { overflow-x: auto; margin: 4px 0 20px; border: 1px solid var(--line); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 420px; }
+  thead th { text-align: left; background: var(--line-soft); padding: 10px 14px; font-weight: 600; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  .callout {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0 20px;
+    background: var(--accent-soft);
+    font-size: 0.9rem;
+  }
+  .callout p { margin: 0; }
+  .pill { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 2px 10px; border-radius: 100px; }
+  .pill.due { background: var(--med-bg); color: var(--med-ink); }
+  .pill.low { background: var(--low-bg); color: var(--low-ink); }
+  .pill.medium { background: var(--med-bg); color: var(--med-ink); }
+  .pill.high { background: var(--high-bg); color: var(--high-ink); }
+  .pill.alert { background: var(--high-bg); color: var(--high-ink); }
+  .badge {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  a { color: var(--accent); }
+  .toc { border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; margin-bottom: 8px; }
+  .toc h3 { margin: 0 0 10px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); }
+  .toc ol { columns: 2; column-gap: 24px; margin: 0; padding-left: 1.2em; }
+  .toc li { margin-bottom: 4px; font-size: 0.9rem; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+  hr { border: none; border-top: 1px solid var(--line); margin: 40px 0; }
+</style>
+</head>
+<body>
+
+<span class="badge">User Guide</span>
+<h1>Micro-Rest Recommendation System</h1>
+<p class="subtitle">
+  A complete walkthrough for study participants, start to finish: signing in, running a work
+  session, checking in, and reading your results.
+</p>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#s1">Signing in</a></li>
+    <li><a href="#s2">Turning on notifications</a></li>
+    <li><a href="#s3">Starting a Work Session</a></li>
+    <li><a href="#s4">Getting a check-in reminder</a></li>
+    <li><a href="#s5">Submitting a check-in</a></li>
+    <li><a href="#s6">Reading your result</a></li>
+    <li><a href="#s7">Micro-rest and feedback</a></li>
+    <li><a href="#s8">The notification bell</a></li>
+    <li><a href="#s9">Viewing your history</a></li>
+    <li><a href="#s10">Baseline</a></li>
+    <li><a href="#s11">Ending session / signing out</a></li>
+    <li><a href="#s12">Troubleshooting</a></li>
+  </ol>
+</div>
+
+<h2 id="s1"><span class="num">1</span> Signing in</h2>
+<p>Go to <code>/login</code>. You'll need two things from your researcher:</p>
+<ul>
+  <li><strong>Participant ID</strong> — <code>P01</code> through <code>P10</code>. This anonymous ID stands in for your name everywhere in the app.</li>
+  <li><strong>PIN</strong> — if this is your first time signing in, type any PIN you like; it becomes your permanent PIN for the study from that point on. If you've signed in before, use the same PIN.</li>
+</ul>
+<p>You're taken to <strong>My Dashboard</strong> (<code>/user</code>) on success.</p>
+
+<h2 id="s2"><span class="num">2</span> Turning on notifications <span style="font-weight:400;color:var(--ink-soft);font-size:0.85rem;">(optional, but recommended)</span></h2>
+<p>On the dashboard, you'll see one of three states:</p>
+<ul>
+  <li><strong>"🔔 Enable Notifications"</strong> — click it and allow the browser's permission prompt. This lets check-in reminders and risk alerts show up as OS-level pop-ups, not just inside the app.</li>
+  <li><strong>"🔔 Notifications on"</strong> — already enabled, nothing to do.</li>
+  <li><strong>"🔕 Notifications blocked"</strong> — you (or your browser) blocked this at some point. Pop-ups won't work until you re-allow them: click the lock/info icon next to your browser's address bar → Notifications → Allow → reload the page. The dashboard explains this same fix if you see this state.</li>
+</ul>
+<p>Notifications are always silent (no sound) — just a visual pop-up.</p>
+
+<h2 id="s3"><span class="num">3</span> Starting a Work Session</h2>
+<p>Under <strong>Current Work Session</strong>, click <strong>Start Work Session</strong>. This begins tracking:</p>
+<ul>
+  <li><strong>Session time</strong> — a live clock, how long the session's been running.</li>
+  <li><strong>Sitting / Screen</strong> — minutes accumulated while the tab is open and visible, reset to zero every time you complete a rest.</li>
+  <li><strong>Check-ins</strong> — how many you've submitted this session.</li>
+</ul>
+<p>You need an active session for check-in reminders to work — without one, the app has nothing to measure "time since your last break" against.</p>
+
+<h2 id="s4"><span class="num">4</span> Getting a check-in reminder</h2>
+<p>While a session is active, the app quietly re-checks every ~10 minutes (and once immediately when the page loads) whether a check-in is due. It becomes due if <strong>any</strong> of these are true:</p>
+<ul>
+  <li>Enough time has passed since your last check-in (this interval adjusts itself — see below).</li>
+  <li>You've been sitting 60+ minutes.</li>
+  <li>Your screen's been on 60+ minutes.</li>
+  <li>90+ minutes have passed with no rest taken.</li>
+</ul>
+<p>When due, you'll see an amber <span class="pill due">Due</span> card with the reason (e.g. <code>rest_threshold_elapsed</code>), a <strong>Check in</strong> button, and a <strong>Snooze</strong> button. This reminder repeats every ~10 minutes for as long as it stays outstanding — it won't stop nagging just because you dismissed the OS pop-up once.</p>
+<div class="callout">
+  <p><strong>Why the interval changes:</strong> after each check-in, the app sets your next reminder based on how that check-in went — Low risk buys you 60 minutes before the next nudge, Medium 30, High 15. If you skip or snooze a suggested rest, the next reminder is capped at 15 minutes regardless of your risk level.</p>
+</div>
+
+<h2 id="s5"><span class="num">5</span> Submitting a check-in</h2>
+<p>Go to <strong>Check-in</strong> (<code>/checkin</code>). Fields:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Field</th><th>Where it comes from</th></tr></thead>
+<tbody>
+<tr><td>Time Point</td><td>Auto-set to right now; pick a preset or a custom time if needed</td></tr>
+<tr><td>Current Heart Rate</td><td>Read from your Fitbit Charge 6 (or equivalent) — you type this in</td></tr>
+<tr><td>Fatigue (Samn-Perelli)</td><td>Self-report, 1 (fully alert) – 7 (completely exhausted)</td></tr>
+<tr><td>Sleepiness (KSS)</td><td>Self-report, 1 (extremely alert) – 9 (extremely sleepy)</td></tr>
+<tr><td>Eye Strain</td><td>Self-report, 1 (none) – 5 (severe)</td></tr>
+<tr><td>Body Discomfort</td><td>Self-report, 1 (none) – 5 (severe)</td></tr>
+<tr><td>Sitting Duration / Screen Exposure</td><td>Pre-filled from your active session's tracked time — you can adjust if it doesn't look right</td></tr>
+</tbody>
+</table>
+</div>
+<p>Submit with <strong>Calculate Fatigue Risk →</strong>.</p>
+
+<h2 id="s6"><span class="num">6</span> Reading your result</h2>
+<p>You're taken straight to your result page, showing:</p>
+<ul>
+  <li><strong>Risk level</strong> — <span class="pill low">Low</span> <span class="pill medium">Medium</span> <span class="pill high">High</span>, plus the numeric score (0–100).</li>
+  <li><strong>Dominant issue</strong> — whichever factor scored highest (e.g. "Long Sitting," "Visual Fatigue").</li>
+  <li><strong>Recommended micro-rest</strong> — only shown for Medium/High (e.g. a 60-second eye break, a posture stretch, a short walk). Low risk gets no rest suggestion — you're doing fine, keep going.</li>
+  <li><strong>Risk Score Breakdown</strong> — a per-factor readout so you can see exactly what drove the result.</li>
+  <li><strong>Reading Details</strong> — your current HR, HR deviation from baseline, the check-in ID, and the dominant issue.</li>
+</ul>
+<p>If risk is Medium or High, you'll also get a real-time pop-up notification with the result (if notifications are enabled) — Low risk intentionally gets no pop-up, since there's nothing to act on.</p>
+
+<h2 id="s7"><span class="num">7</span> Doing the micro-rest and giving feedback</h2>
+<p>If a micro-rest was suggested, click <strong>Start Micro-Rest →</strong>, actually do the suggested action, then rate it:</p>
+<ul>
+  <li>Did you complete it?</li>
+  <li>How useful was it? (1–5)</li>
+  <li>Was the timing appropriate? (1–5)</li>
+  <li>How disruptive was it to your work? (1–5)</li>
+  <li>Did you feel recovered afterward? (1–5)</li>
+</ul>
+<p>This feeds back into your session: completing a rest resets your sitting/screen counters to zero and records when you last rested. Skipping it (or saying you still feel drained) tightens your next check-in interval to 15 minutes, same as a High-risk result would.</p>
+<p>You can also click <strong>Skip &amp; Give Feedback</strong> straight from the result page if you don't want to do the rest right now, or <strong>← New Check-in</strong> to go straight to another check-in.</p>
+
+<h2 id="s8"><span class="num">8</span> The notification bell 🔔</h2>
+<p>The bell in the navbar (top right, next to your name) shows your own recent notifications — never anyone else's. Three kinds, each with its own badge:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Badge</th><th>Meaning</th><th>Links to</th></tr></thead>
+<tbody>
+<tr><td><span class="pill due">Due</span></td><td>A check-in reminder fired</td><td><code>/checkin</code></td></tr>
+<tr><td><span class="pill low">Low</span> <span class="pill medium">Medium</span> <span class="pill high">High</span></td><td>A completed check-in's risk result</td><td><code>/history</code></td></tr>
+<tr><td><span class="pill alert">Alert</span></td><td>Two consecutive High-risk results — an extended rest is recommended</td><td><code>/checkin</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>It refreshes automatically every 10 seconds. The unread count clears when you open it.</p>
+
+<h2 id="s9"><span class="num">9</span> Viewing your history</h2>
+<p>Go to <strong>My History</strong> (<code>/history</code>). Two tabs:</p>
+<ul>
+  <li><strong>Check-ins</strong> — every check-in you've submitted, with risk level, score, dominant issue, and links to view the full result or add feedback. Filter by risk level (All / High / Medium / Low) using the chips above the table.</li>
+  <li><strong>Baseline Entries</strong> — your recorded baseline readings from Phase 1.</li>
+</ul>
+
+<h2 id="s10"><span class="num">10</span> Baseline</h2>
+<p>If you haven't completed your baseline yet, the dashboard shows an amber "Baseline not set up yet" card — go to <strong>Baseline</strong> (<code>/baseline</code>) and log a few readings while resting normally (Before Work, After Work, etc.). The app averages these into your personal baseline HR, which every future check-in's HR deviation is measured against.</p>
+
+<h2 id="s11"><span class="num">11</span> Ending your session / signing out</h2>
+<ul>
+  <li><strong>End Session</strong> (in the Current Work Session card) — stops time tracking. Do this when you're done for the day; start a new one next time you begin work.</li>
+  <li><strong>Sign out</strong> (top right) — logs you out. Your data isn't affected; sign back in any time with the same Participant ID and PIN.</li>
+</ul>
+
+<hr />
+
+<h2 id="s12"><span class="num">12</span> Troubleshooting</h2>
+
+<p><strong>"Invalid participant ID or PIN"</strong> — either you mistyped, or your account doesn't exist yet (ask your researcher to confirm your ID is set up). This is not the same as a forgotten PIN — there's no PIN reset; contact your researcher if you're genuinely locked out.</p>
+
+<p><strong>No pop-up notifications, ever</strong> — check the dashboard's notification indicator. If it says blocked, follow the on-screen fix (browser address bar → lock/info icon → Notifications → Allow → reload). If it says "Notifications on" and you still see nothing, the in-app bell will still have the record — pop-ups and the bell are independent, so you haven't missed anything permanently.</p>
+
+<p><strong>"Backend unreachable"</strong> message anywhere — the API server isn't running or isn't reachable. This is an infrastructure issue, not something fixable from the participant side; let your researcher know.</p>
+
+<p><strong>A check-in reminder won't stop</strong> — that's intentional. It keeps repeating every ~10 minutes until you either check in or end the session. Snoozing dismisses the current pop-up but doesn't stop the underlying timer from evaluating again next cycle.</p>
+
+</body>
+</html>

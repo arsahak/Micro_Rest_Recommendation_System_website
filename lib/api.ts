@@ -282,6 +282,12 @@ export const endSession = (session_id: string) => put<{ success: boolean; data: 
 export const getCheckinStatus = (session_id: string) => get<{ success: boolean; data: CheckinStatus }>(`/api/sessions/${session_id}/checkin-status`);
 export const snoozeCheckin = (session_id: string) => put<{ success: boolean; data: { notification: unknown; session: Session } }>(`/api/sessions/${session_id}/snooze`, {});
 
+// ---------- Reset ----------
+// Wipes every study-data collection (check-ins, sessions, baseline, feedback,
+// notifications) but never touches participants/PINs. Deliberately callable
+// whether or not anyone is signed in.
+export const resetAllData = () => post<{ success: boolean; message: string; cleared: Record<string, number> }>("/api/reset", {});
+
 // ---------- Participant Auth ----------
 export interface ParticipantAuthResponse {
   token: string;

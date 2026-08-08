@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Technology Stack — Micro-Rest Recommendation System</title>
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #1a1f24;
+    --ink-soft: #5b6570;
+    --accent: #0d9488;
+    --accent-soft: #ecfbf9;
+    --line: #dfe5e8;
+    --line-soft: #eef1f3;
+    --code-bg: #f3f5f6;
+    --warn-bg: #fff8ec;
+    --warn-border: #f0d9a8;
+    --warn-ink: #8a5a12;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #12161a;
+      --ink: #e6ebee;
+      --ink-soft: #9aa7b0;
+      --accent: #2dd4bf;
+      --accent-soft: #10302c;
+      --line: #2a3238;
+      --line-soft: #1c2226;
+      --code-bg: #1a2024;
+      --warn-bg: #2a2213;
+      --warn-border: #55461c;
+      --warn-ink: #e0b25a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--paper); }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    line-height: 1.65;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 32px; max-width: 68ch; }
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 40px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  p { margin: 0 0 14px; max-width: 70ch; }
+  ul { margin: 0 0 14px; padding-left: 1.3em; }
+  li { margin-bottom: 6px; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .table-wrap { overflow-x: auto; margin: 4px 0 20px; border: 1px solid var(--line); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 480px; }
+  thead th {
+    text-align: left;
+    background: var(--line-soft);
+    padding: 10px 14px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  .note {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    color: var(--warn-ink);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 8px 0 20px;
+    font-size: 0.9rem;
+  }
+  .note strong { color: inherit; }
+  .badge {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<span class="badge">Reference</span>
+<h1>Technology Stack — Micro-Rest Recommendation System</h1>
+<p class="subtitle">
+  Verified against the two repositories' <code>package.json</code> files rather than assumed.
+  Two repos, two roles: <code>website/</code> is the participant-facing app; <code>backend/</code>
+  is a <strong>shared</strong> Express API that also serves an unrelated set of apps (admissions,
+  exams, fees, orders, products, a chatbot) on the same MongoDB database. The fatigue-study feature
+  lives in a specific slice of its collections and routes.
+</p>
+
+<h2>Frontend (website/)</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Framework</td><td><strong>Next.js</strong> (App Router)</td><td>16.2.9</td><td>Routing, server components, server actions, the <code>/api/proxy/*</code> route that forwards requests to the backend</td></tr>
+<tr><td>UI library</td><td><strong>React</strong></td><td>19.2.4</td><td>Component model</td></tr>
+<tr><td>Language</td><td><strong>TypeScript</strong></td><td>5.9.3</td><td>Static typing across the whole app</td></tr>
+<tr><td>Styling</td><td><strong>Tailwind CSS</strong></td><td>4.3.1 (via <code>@tailwindcss/postcss</code>)</td><td>All styling — no separate CSS framework or component library</td></tr>
+<tr><td>Runtime</td><td><strong>Node.js</strong></td><td>24.x</td><td>Dev/build tooling</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+  <strong>Not used, despite being common in similar stacks</strong> — worth knowing so no one goes looking for them:
+  <ul style="margin-top:10px;">
+    <li><strong>Framer Motion</strong> — not installed. Interactive states (hover, transitions, the notification bell dropdown) are done with plain CSS transitions and conditional Tailwind classes.</li>
+    <li><strong>Auth.js / NextAuth</strong> — not installed. Authentication is a small, custom, PIN-based flow (see below) — there's no session provider, no OAuth, no adapter.</li>
+  </ul>
+</div>
+
+<p>
+  Client-side data fetching goes through <code>lib/api.ts</code>, which resolves to
+  <code>/api/proxy/*</code> in the browser (a same-origin Next.js Route Handler that forwards the
+  request server-to-server to the Express API) and calls the Express API directly when running in
+  a Server Component/Action. This avoids CORS entirely and keeps the backend URL out of client-side code.
+</p>
+
+<h2>Backend (backend/)</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Runtime</td><td><strong>Node.js</strong></td><td>24.x</td><td>—</td></tr>
+<tr><td>Framework</td><td><strong>Express</strong></td><td>4.21.2</td><td>REST API, routing, middleware</td></tr>
+<tr><td>Language</td><td><strong>TypeScript</strong></td><td>5.x (via <code>ts-node</code> in dev)</td><td>—</td></tr>
+<tr><td>Database driver</td><td><strong>Mongoose</strong></td><td>8.20.1</td><td>Schema/model layer over MongoDB</td></tr>
+<tr><td>Database</td><td><strong>MongoDB Atlas</strong></td><td>—</td><td>Cluster <code>cluster0.uxcey3n.mongodb.net</code>, database <code>gyneclinics</code> (shared, not study-specific)</td></tr>
+<tr><td>Auth</td><td><strong>jsonwebtoken</strong> + <strong>bcryptjs</strong></td><td>—</td><td>Custom JWT issuance/verification and PIN hashing — not Auth.js/NextAuth</td></tr>
+<tr><td>Dev tooling</td><td><strong>nodemon</strong>, <strong>ts-node</strong></td><td>—</td><td>Hot-reload for local development</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>
+  Also present in the backend but <strong>unrelated to the fatigue study</strong> (they serve the
+  shared chatbot/knowledge-base feature used by the other apps on this backend):
+  <code>openai</code>, <code>langchain</code>, <code>@pinecone-database/pinecone</code>,
+  <code>pdf-parse</code>. <code>multer</code> and <code>sharp</code> handle file/image uploads
+  for those other apps too.
+</p>
+
+<h2>Data flow</h2>
+<pre>Browser
+  │
+  ▼
+Next.js (website) — Server Components / Route Handlers / Server Actions
+  │  same-origin, no CORS
+  ▼
+/api/proxy/[...path]  — forwards the request + Bearer token to:
+  │
+  ▼
+Express (backend) — /api/* routes, `authenticate` + ownership middleware
+  │
+  ▼
+MongoDB Atlas (gyneclinics database)</pre>
+
+<p>
+  The website never calls the Express API's real URL directly from the browser — every client-side
+  request is same-origin through the proxy, which reads the participant's JWT from an
+  <code>mrrs_token</code> cookie (or <code>localStorage</code> on the client) and attaches it as
+  <code>Authorization: Bearer &lt;token&gt;</code> before forwarding.
+</p>
+
+<h2>Authentication model</h2>
+<p>There is no username/password or OAuth. A participant signs in with:</p>
+<ul>
+  <li><strong>Participant ID</strong> — <code>P01</code> through <code>P10</code></li>
+  <li><strong>PIN</strong> — a short numeric/string PIN. On a participant's very first login, whatever PIN they type becomes their permanent one (hashed with bcrypt); after that, it's checked normally.</li>
+</ul>
+<p>
+  On success, the backend issues a JWT (<code>{ userId: participant_id, role: "participant" }</code>)
+  valid for 30 days, stored in <code>localStorage</code> and mirrored to a plain (non-<code>httpOnly</code>)
+  cookie so server-rendered pages and Route Handlers can read it too.
+</p>
+<p>
+  <strong>Every participant-scoped endpoint enforces that a <code>"participant"</code>-role token can
+  only ever read or write its own <code>participant_id</code></strong> — regardless of what ID is
+  passed in a query string or request body. Non-participant roles (staff/researcher accounts, used
+  for the aggregate research dashboard) are unrestricted. This was verified under real concurrent
+  multi-participant load, not just single-request testing.
+</p>
+
+<h2>Core data model</h2>
+<p>MongoDB collections used by this feature:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Collection</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>participants</code></td><td>ID, PIN hash, study phase (<code>Baseline</code> / <code>Prototype-use</code> / <code>Completed</code>)</td></tr>
+<tr><td><code>sessions</code></td><td>One active "work session" per participant at a time — tracks sitting/screen time, last check-in/rest, adaptive interval state</td></tr>
+<tr><td><code>baselinephase1</code></td><td>Raw baseline readings (Phase 1 data collection)</td></tr>
+<tr><td><code>baselinesummaries</code></td><td>Per-participant averaged baseline (reference point for HR-deviation scoring)</td></tr>
+<tr><td><code>phase2checkins</code></td><td>Every submitted check-in and its computed risk result</td></tr>
+<tr><td><code>feedbacklogs</code></td><td>Post-micro-rest feedback (completed? useful? recovered?)</td></tr>
+<tr><td><code>notificationlogs</code></td><td>Every notification-worthy event — check-in due, per-check-in risk result, escalation — the single source the notification bell reads from</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Notifications</h2>
+<p>Two independent channels, both driven from the same backend logic:</p>
+<ul>
+  <li><strong>Persisted, in-app</strong> — every notification-worthy event is written to <code>notificationlogs</code> and surfaced in the website's notification bell via <code>GET /api/sessions/notifications</code> (ownership-scoped, like everything else).</li>
+  <li><strong>Native OS notification</strong> — the browser's <code>Notification</code> API, requested explicitly via a button on the dashboard (not auto-prompted at login). Fired <code>silent: true</code> — visual only, no sound.</li>
+</ul>
+<p>
+  Both are best-effort: if browser notification permission is denied, the in-app bell entry is
+  still created and visible; the native toast is simply skipped, and the UI now says so explicitly
+  rather than failing silently.
+</p>
+
+</body>
+</html>

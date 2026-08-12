@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { ApiError, getCheckins, getBaselineEntries, type Checkin, type BaselineEntry } from "@/lib/api";
+import { ApiError, getCheckins, getBaselineEntries, resetMyHistory, type Checkin, type BaselineEntry } from "@/lib/api";
 
 const badge: Record<string, string> = {
   Low: "badge-low",
@@ -211,10 +211,28 @@ function HistoryContent() {
   const searchParams = useSearchParams();
   const risk_level = searchParams.get("risk_level") ?? undefined;
   const [activeTab, setActiveTab] = useState<"checkins" | "baseline">("checkins");
+  const [resetKey, setResetKey] = useState(0);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     if (mounted && !isLoggedIn) router.push("/login");
   }, [mounted, isLoggedIn, router]);
+
+  const handleResetHistory = async () => {
+    const confirmed = window.confirm(
+      "This permanently deletes all of your check-ins and baseline entries. This cannot be undone. Continue?"
+    );
+    if (!confirmed || !participantId) return;
+    setResetting(true);
+    try {
+      await resetMyHistory();
+      setResetKey((k) => k + 1);
+    } catch {
+      window.alert("Reset failed — the backend may be unreachable.");
+    } finally {
+      setResetting(false);
+    }
+  };
 
   if (!mounted || !isLoggedIn || !participantId) {
     return (
@@ -234,12 +252,23 @@ function HistoryContent() {
             All data for <span className="font-semibold text-teal-600">{participantId}</span>
           </p>
         </div>
-        <Link
-          href="/checkin"
-          className="inline-block text-center bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shrink-0"
-        >
-          + New Check-in
-        </Link>
+        <div className="flex gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={handleResetHistory}
+            disabled={resetting}
+            title="Delete all your check-ins and baseline entries"
+            className="text-sm font-semibold px-4 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {resetting ? "Resetting…" : "Reset History"}
+          </button>
+          <Link
+            href="/checkin"
+            className="inline-block text-center bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          >
+            + New Check-in
+          </Link>
+        </div>
       </div>
 
       <div className="border-b border-slate-200">
@@ -280,11 +309,11 @@ function HistoryContent() {
               </Link>
             ))}
           </div>
-          <CheckinsTab participantId={participantId} riskFilter={risk_level} />
+          <CheckinsTab key={resetKey} participantId={participantId} riskFilter={risk_level} />
         </>
       )}
 
-      {activeTab === "baseline" && <BaselineTab participantId={participantId} />}
+      {activeTab === "baseline" && <BaselineTab key={resetKey} participantId={participantId} />}
 
     </div>
   );

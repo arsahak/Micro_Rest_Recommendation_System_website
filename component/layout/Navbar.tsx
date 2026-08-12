@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import NotificationBell from "./NotificationBell";
 import { useAuth } from "@/context/AuthContext";
-import { resetAllData } from "@/lib/api";
 
 const publicLinks = [
   { href: "/",          label: "Home"       },
@@ -25,7 +24,6 @@ export default function Navbar() {
   const router = useRouter();
   const { isLoggedIn, participantId, logout, mounted } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -34,23 +32,6 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     router.push("/login");
-  };
-
-  const handleReset = async () => {
-    const confirmed = window.confirm(
-      "This permanently deletes all check-ins, sessions, baseline data, feedback, and notifications for every participant (P01–P10). Participant accounts and PINs are kept. This cannot be undone. Continue?"
-    );
-    if (!confirmed) return;
-    setResetting(true);
-    try {
-      await resetAllData();
-      window.alert("All study data has been reset. Participant accounts and PINs were kept.");
-      router.refresh();
-    } catch {
-      window.alert("Reset failed — the backend may be unreachable.");
-    } finally {
-      setResetting(false);
-    }
   };
 
   const links = isLoggedIn ? participantLinks : publicLinks;
@@ -120,17 +101,6 @@ export default function Navbar() {
               </span>
             </Link>
           )}
-
-          {/* Reset data — visible whether or not anyone is signed in */}
-          <button
-            type="button"
-            onClick={handleReset}
-            disabled={resetting}
-            title="Reset all study data (keeps participant accounts and PINs)"
-            className="text-xs font-medium px-2.5 py-1.5 rounded-md border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ml-1 shrink-0"
-          >
-            {resetting ? "Resetting…" : "🔄 Reset Data"}
-          </button>
 
           {/* Mobile menu toggle */}
           <button
